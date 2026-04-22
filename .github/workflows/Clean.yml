@@ -1,0 +1,28 @@
+name: Clean Repo Keep .github
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Clean Files
+        run: |
+          find . -mindepth 1 ! -path "./.github*" ! -path "./.git*" -exec rm -rf {} +
+
+      - name: Commit
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+
+          git add .
+          git commit -m "Clean repo keep .github" || echo "No changes"
+
+          git push
