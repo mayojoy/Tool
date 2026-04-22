@@ -1,0 +1,39 @@
+name: Clean Actions Runs
+
+on:
+  workflow_dispatch:   # 手动触发
+
+permissions:
+  actions: write
+  contents: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Delete all workflow runs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OWNER: mayojoy
+          REPO: Tool
+        run: |
+          echo "🚀 Fetching workflow runs..."
+
+          runs=$(curl -s \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/$OWNER/$REPO/actions/runs?per_page=100" \
+            | jq -r '.workflow_runs[].id')
+
+          echo "🧹 Deleting runs..."
+
+          for id in $runs; do
+            echo "Deleting run: $id"
+            curl -s -X DELETE \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/$OWNER/$REPO/actions/runs/$id"
+          done
+
+          echo "✅ Done."
