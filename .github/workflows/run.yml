@@ -1,0 +1,118 @@
+name: Generate routing rules for Surge
+
+permissions:
+  contents: write
+
+on:
+  workflow_dispatch:
+
+  schedule:
+    - cron: "30 22 * * *"
+
+  push:
+    branches:
+      - release
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+
+      - name: Variables
+        run: |
+          echo "TAG_NAME=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+          mkdir -p publish/ruleset
+
+
+      - name: Generate rules
+        shell: bash
+        run: |
+
+          # iCloud
+          curl -sSL \
+          https://raw.githubusercontent.com/Loyalsoldier/domain-list-custom/release/icloud.txt \
+          | awk -F: '
+          /^full:/ {print $2}
+          /^domain:/ {print "."$2}
+          ' > publish/icloud.txt
+
+
+          # Private
+          curl -sSL \
+          https://raw.githubusercontent.com/Loyalsoldier/domain-list-custom/release/private.txt \
+          | awk -F: '
+          /^full:/ {print $2}
+          /^domain:/ {print "."$2}
+          ' > publish/private.txt
+
+
+          # Proxy
+          curl -sSL \
+          https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/proxy-list.txt \
+          | sed -E '
+          /^full:/s/^full://;
+          /^domain:/s/^domain:/./
+          ' > publish/proxy.txt
+
+
+          # Direct
+          curl -sSL \
+          https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/direct-list.txt \
+          | sed -E '
+          /^full:/s/^full://;
+          /^domain:/s/^domain:/./
+          ' > publish/direct.txt
+
+
+          # GFW
+          curl -sSL \
+          https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/gfw.txt \
+          | sed -E '
+          /^full:/s/^full://;
+          /^domain:/s/^domain:/./
+          ' > publish/gfw.txt
+
+
+          # Reject
+          curl -sSL \
+          https://raw.githubusercontent.com/Loyalsoldier/v2ray-rules-dat/release/reject-list.txt \
+          | sed -E '
+          /^full:/s/^full://;
+          /^domain:/s/^domain:/./
+          ' > publish/reject.txt
+
+
+      - name: Push release branch
+        run: |
+
+          cd publish
+
+          git init
+          git checkout -b release
+
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+          git add .
+          git commit -m "Update rules"
+
+          git remote add origin \
+          "https://${{github.actor}}:${{secrets.GITHUB_TOKEN}}@github.com/${{github.repository}}"
+
+          git push -f origin release
+
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: ${{env.TAG_NAME}}
+          target_commitish: release
+          files: publish/*
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
