@@ -136,7 +136,7 @@
           with:
             name: ${{ env.RELEASE_NAME }}
             tag_name: ${{ env.TAG_NAME }}
-            target_commitish: release
+            target_commitish: ${{ github.sha }}
             files: publish/*
           env:
             GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
