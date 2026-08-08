@@ -2,7 +2,8 @@ name: Sync Multiple Repositories
 
 on:
   schedule:
-    # 每天北京时间 8:00
+    # 每天北京时间 08:00
+    # UTC 00:00
     - cron: "0 0 * * *"
 
   workflow_dispatch:
@@ -18,44 +19,89 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
+
       matrix:
         repo:
+
+          # Repcz Tool
           - source: https://github.com/Repcz/Tool.git
-            branch: tool
+            source_branch: main
+            target_branch: tool
 
+
+          # blackmatrix7 ios_rule_script
           - source: https://github.com/blackmatrix7/ios_rule_script.git
-            branch: ios_rule
+            source_branch: master
+            target_branch: ios_rule
 
+
+          # MetaCubeX meta-rules-dat
           - source: https://github.com/MetaCubeX/meta-rules-dat.git
-            branch: meta_rules
+            source_branch: meta
+            target_branch: meta_rules
+
 
 
     steps:
 
       - name: Sync ${{ matrix.repo.source }}
+        env:
+          TARGET_REPO: https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+
         run: |
+
+          echo "=================================="
+          echo "Sync:"
+          echo "${{ matrix.repo.source }}"
+          echo "Source branch:"
+          echo "${{ matrix.repo.source_branch }}"
+          echo "Target branch:"
+          echo "${{ matrix.repo.target_branch }}"
+          echo "=================================="
+
 
           rm -rf source
 
-          git clone --depth=1 \
-            ${{ matrix.repo.source }} \
+
+          # 完整 clone，避免 shallow object 问题
+          git clone \
+            --single-branch \
+            --branch "${{ matrix.repo.source_branch }}" \
+            "${{ matrix.repo.source }}" \
             source
 
 
           cd source
 
 
-          git checkout -B ${{ matrix.repo.branch }}
-
-
           git config user.name "github-actions"
-          git config user.email "actions@github.com"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
 
-          git remote add target \
-          https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+
+          # 添加目标仓库
+          git remote add target "$TARGET_REPO"
 
 
-          git push target \
-          ${{ matrix.repo.branch }} \
-          --force
+
+          # 推送重试 3 次
+          for attempt in 1 2 3
+          do
+
+            echo "Push attempt ${attempt}/3"
+
+
+            git push \
+              target \
+              HEAD:${{ matrix.repo.target_branch }} \
+              --force \
+              --no-thin \
+              && break
+
+
+            echo "Push failed, retry..."
+            sleep 15
+
+
+          done
