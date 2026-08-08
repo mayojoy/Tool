@@ -26,7 +26,7 @@ jobs:
 
           # Repcz Tool
           - source: https://github.com/Repcz/Tool.git
-            source_branch: main
+            source_branch: X
             target_branch: tool
 
 
