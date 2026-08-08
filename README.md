@@ -2,6 +2,8 @@
 
 > [!Caution]
 > 禁止任何形式的转载或发布至国内平台
+> 
+[来源](https://github.com/Repcz/Tool)
 
 > [!WARNING]
 > 禁止 FORK
