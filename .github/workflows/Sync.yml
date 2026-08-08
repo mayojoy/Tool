@@ -1,0 +1,61 @@
+name: Sync Multiple Repositories
+
+on:
+  schedule:
+    # 每天北京时间 8:00
+    - cron: "0 0 * * *"
+
+  workflow_dispatch:
+
+
+permissions:
+  contents: write
+
+
+jobs:
+  sync:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        repo:
+          - source: https://github.com/Repcz/Tool.git
+            branch: tool
+
+          - source: https://github.com/blackmatrix7/ios_rule_script.git
+            branch: ios_rule
+
+          - source: https://github.com/MetaCubeX/meta-rules-dat.git
+            branch: meta_rules
+
+
+    steps:
+
+      - name: Sync ${{ matrix.repo.source }}
+        run: |
+
+          rm -rf source
+
+          git clone --depth=1 \
+            ${{ matrix.repo.source }} \
+            source
+
+
+          cd source
+
+
+          git checkout -B ${{ matrix.repo.branch }}
+
+
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+
+
+          git remote add target \
+          https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
+
+
+          git push target \
+          ${{ matrix.repo.branch }} \
+          --force
