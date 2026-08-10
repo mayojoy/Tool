@@ -37,7 +37,9 @@ jobs:
             source_branch: meta
             target_branch: meta_rules
 
-
+          - source: https://github.com/Loyalsoldier/surge-rules.git
+            source_branch: release
+            target_branch: surge-rules
 
     steps:
 
