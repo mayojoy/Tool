@@ -111,7 +111,7 @@ jobs:
 
 
           git commit \
-            -m "Sync ${{ matrix.repo.source }} latest"
+            -m "$(cd ../source && git log -1 --pretty=%B)"
 
 
 
