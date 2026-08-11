@@ -64,7 +64,7 @@ jobs:
 
           # 完整 clone，避免 shallow object 问题
           git clone \
-          + --depth=1 \
+           --depth=1 \
             --single-branch \
             --branch "${{ matrix.repo.source_branch }}" \
             "${{ matrix.repo.source }}" \
