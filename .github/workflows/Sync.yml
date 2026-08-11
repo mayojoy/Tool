@@ -64,11 +64,10 @@ jobs:
 
 
           rm -rf source
-          rm -rf target
 
 
           #################################
-          # 浅克隆源仓库，只下载最新提交
+          # 浅克隆，只下载最新提交
           #################################
 
           git clone \
@@ -79,48 +78,27 @@ jobs:
             source
 
 
+          cd source
+
+
           #################################
-          # 创建新的干净 Git 仓库
+          # 补全 Git 历史
           #################################
 
-          mkdir target
-
-          cp -a source/. target/
+          git fetch --unshallow
 
 
-          cd target
+          #################################
+          # 添加目标仓库
+          #################################
 
-
-          rm -rf .git
-
-
-          git init
-
-
-          git config user.name "github-actions"
-
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git remote add target "$TARGET_REPO"
 
 
 
           #################################
-          # 提交最新文件
+          # 同步完整 Git 历史
           #################################
-
-          git add .
-
-
-          git commit \
-            -m "$(cd ../source && git log -1 --pretty=%B)"
-
-
-
-          #################################
-          # 推送目标分支
-          #################################
-
-          git remote add origin "$TARGET_REPO"
-
 
           for attempt in 1 2 3
           do
@@ -129,9 +107,10 @@ jobs:
 
 
             git push \
-              origin \
+              target \
               HEAD:${{ matrix.repo.target_branch }} \
               --force \
+              --no-thin \
               && break
 
 
