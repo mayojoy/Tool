@@ -386,6 +386,24 @@ function main(params) {
             "path": "./ruleset/Download.yaml"
         },
 
+        "ChinaMax_Domain": {
+            "type": "http",
+            "behavior": "domain",
+            "interval": 86400,
+            "url":
+                "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/ChinaMax/ChinaMax_Domain.yaml",
+            "path": "./ruleset/ChinaMax_Domain.yaml"
+        },
+
+        "ChinaMax_IP": {
+            "type": "http",
+            "behavior": "ipcidr",
+            "interval": 86400,
+            "url":
+                "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/ChinaMax/ChinaMax_IP.yaml",
+            "path": "./ruleset/ChinaMax_IP.yaml"
+        },
+
         "ChinaIP": {
             "type": "http",
             "behavior": "ipcidr",
@@ -1421,8 +1439,11 @@ function main(params) {
     // 中国 IP
     // ============================================================
     rules.push(
+        "RULE-SET,ChinaMax_Domain,DIRECT",
+        "RULE-SET,ChinaMax_IP,DIRECT,no-resolve"
         "RULE-SET,ChinaIP,DIRECT,no-resolve",
         "GEOIP,CN,DIRECT"
+        
     );
 
     // ============================================================
