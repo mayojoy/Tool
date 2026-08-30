@@ -1,5 +1,5 @@
 #  ---------说明---------
-#  mihomo配置（全量版）
+#  mihomo配置（基于AIsouler/MyClash修改)
 #  作者：AIsouler
 #  原仓库：https://github.com/AIsouler/MyClash
 #  配置链接：https://raw.githubusercontent.com/AIsouler/MyClash/main/Config/mihomoConfig.yaml
@@ -390,13 +390,13 @@ proxies_common:
 
 # 地区过滤器正则表达式定义
 group_filter:
-  HK_filter: &HK_filter { filter: '(?i)(🇭🇰|HK|(?<![A-Za-z])HKG?(?![A-Za-z])|hong\s*kong)' }
-  JP_filter: &JP_filter { filter: '(?i)(🇯🇵|JP|东京|大阪|京都|(?<![A-Za-z])JPN?(?![A-Za-z])|japan)' }
+  HK_filter: &HK_filter { filter: '(?i)^(?=.*(🇭🇰|香港|(?<![A-Za-z])HK(?![A-Za-z])|(?<![A-Za-z])HKG(?![A-Za-z])|Hong\s*Kong))(?=.*(0\.1倍|0\.01倍)).*$' }
+  JP_filter: &JP_filter { filter: '(?i)^(?=.*(🇯🇵|日本|(?<![A-Za-z])JP(?![A-Za-z])|(?<![A-Za-z])JPN(?![A-Za-z])|Japan))(?=.*(0\.1倍|0\.01倍)).*$' }
   US_filter:
     &US_filter {
-      filter: '(?i)(🇺🇸|US|纽约|洛杉矶|旧金山|芝加哥|休斯顿|迈阿密|西雅图|波士顿|华盛顿|拉斯维加斯|圣何塞|圣地亚哥|(?<![A-Za-z])USA?(?![A-Za-z])|america|united\s*states)',
+      filter: '(?i)^(?=.*(🇺🇸|美国|纽约|洛杉矶|旧金山|芝加哥|休斯顿|迈阿密|西雅图|波士顿|华盛顿|拉斯维加斯|圣何塞|圣地亚哥|(?<![A-Za-z])US(?![A-Za-z])|(?<![A-Za-z])USA(?![A-Za-z])|America|United\s*States))(?=.*(0\.1倍|0\.01倍)).*$',
     }
-  SG_filter: &SG_filter { filter: '(?i)(🇸🇬|SG|狮城|(?<![A-Za-z])SGP?(?![A-Za-z])|singapore)' }
+  SG_filter: &SG_filter { filter: '(?i)^(?=.*(🇸🇬|新加坡|狮城|(?<![A-Za-z])SG(?![A-Za-z])|(?<![A-Za-z])SGP(?![A-Za-z])|Singapore))(?=.*(0\.1倍|0\.01倍)).*$' }
   TW_filter: &TW_filter { filter: '(?i)(🇹🇼|台湾|台北|高雄|(?<![A-Za-z])TWN?(?![A-Za-z])|taiwan)' }
   low_filter: &low_filter { filter: '^(?!.*(?:剩|期|客户端|软件)).*(?:(?<!\d)0\.[0-5]|下载|低倍)' }
   high_filter:
